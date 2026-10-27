@@ -12,9 +12,6 @@ public class Hamburger {
     public Long id;
     public String name;
 
-    public Hamburger() {
-    }
-
     public Hamburger(String name) {
         this.name = name;
     }
@@ -25,7 +22,7 @@ public class Hamburger {
     }
 
     public static Multi<Hamburger> findAll(Pool client) {
-        return client.query("SELECT id, name FROM hamburgers ORDER BY name ASC").execute()
+        return client.query("SELECT id, name FROM hamburgers ORDER BY id ASC").execute()
                 .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
                 .onItem().transform(Hamburger::from);
     }
