@@ -26,22 +26,24 @@ public class DBInit {
     }
 
     private void initdb() {
-    client.query("DROP TABLE IF EXISTS hamburgers").execute()
-            .flatMap(r -> client.query("CREATE TABLE hamburgers (id SERIAL PRIMARY KEY, name TEXT NOT NULL)").execute())
-            .flatMap(r -> client.query("INSERT INTO hamburgers (name) VALUES ('Classic Burger')").execute())
-            .flatMap(r -> client.query("INSERT INTO hamburgers (name) VALUES ('Double Burger')").execute())
-            .flatMap(r -> client.query("INSERT INTO hamburgers (name) VALUES ('Veggie Burger')").execute())
-            .await().indefinitely();
-    client.query("DROP TABLE IF EXISTS ingredients").execute()
-            .flatMap(r -> client.query("CREATE TABLE ingredients (id SERIAL PRIMARY KEY, name TEXT NOT NULL)").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('Burger')").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('Lattuce')").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('Tomato')").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('Cheddar')").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('Bacon')").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('Fries')").execute())
-            .flatMap(r -> client.query("INSERT INTO ingredients (name) VALUES ('')").execute())
-            .await().indefinitely();
+        client.query("DROP TABLE IF EXISTS ingredients").execute()
+                .flatMap(r -> client.query("DROP TABLE IF EXISTS hamburgers").execute())
+                .flatMap(r -> client.query("CREATE TABLE hamburgers (id SERIAL PRIMARY KEY, name TEXT NOT NULL)").execute())
+                .flatMap(r -> client.query("INSERT INTO hamburgers (name) VALUES ('Classic Burger')").execute())
+                .flatMap(r -> client.query("INSERT INTO hamburgers (name) VALUES ('Double Burger')").execute())
+                .flatMap(r -> client.query("INSERT INTO hamburgers (name) VALUES ('Veggie Burger')").execute())
+                .flatMap(r -> client.query("CREATE TABLE ingredients (id SERIAL PRIMARY KEY, hamburger_id INTEGER NOT NULL REFERENCES hamburgers(id) ON DELETE CASCADE, name TEXT NOT NULL)").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Classic Burger'), 'Burger')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Classic Burger'), 'Lettuce')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Classic Burger'), 'Tomato')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Classic Burger'), 'Cheddar')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Double Burger'), 'Burger')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Double Burger'), 'Bacon')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Double Burger'), 'Fries')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Veggie Burger'), 'Burger')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Veggie Burger'), 'Lettuce')").execute())
+                .flatMap(r -> client.query("INSERT INTO ingredients (hamburger_id, name) VALUES ((SELECT id FROM hamburgers WHERE name = 'Veggie Burger'), 'Tomato')").execute())
+                .await().indefinitely();
     }
 
 }
