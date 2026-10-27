@@ -1,0 +1,3 @@
+org/acme/reactive/crud/DBInit.class
+org/acme/reactive/crud/HamburgerResource.class
+org/acme/reactive/crud/Hamburger.class
